@@ -25,7 +25,8 @@
         <surefire.plugin.version>3.2.5</surefire.plugin.version>
         <maven.compiler.plugin.version>3.12.1</maven.compiler.plugin.version>
 
-        <spotbugs.version>4.8.2.0</spotbugs.version>
+        <spotbugs.plugin.version>4.8.2.0</spotbugs.plugin.version>
+        <spotbugs.version>4.8.3</spotbugs.version>
         <checkstyle.version>3.3.1</checkstyle.version>
 
         <slf4j.version>1.8.0-beta2</slf4j.version>
@@ -35,7 +36,6 @@
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -69,7 +69,6 @@
             <artifactId>config</artifactId>
             <version>${config.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
@@ -96,15 +95,10 @@
         <profile>
             <id>production</id>
             <properties>
-            </properties>
-        </profile>
-        <profile>
-            <id>test</id>
-            <properties>
+                <base.url>https://petstore.swagger.io/v2/</base.url>
             </properties>
         </profile>
     </profiles>
-
 
     <build>
         <plugins>
@@ -115,6 +109,7 @@
                 <configuration>
                     <systemPropertyVariables>
                         <test.project.status>test</test.project.status>
+                        <base.url>${base.url}</base.url>
                         <test.project.language>${test.project.language}</test.project.language>
                     </systemPropertyVariables>
                 </configuration>
@@ -130,36 +125,35 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${checkstyle.version}</version>
+                <configuration>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <configLocation>${project.build.sourceDirectory}/../resources/checkstyle.xml</configLocation>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>analyze-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>${spotbugs.version}</version>
+                <version>${spotbugs.plugin.version}</version>
                 <dependencies>
-                    <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
                     <dependency>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs</artifactId>
-                        <version>4.8.5</version>
+                        <version>${spotbugs.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
-            <!--            <plugin>-->
-            <!--                <groupId>org.apache.maven.plugins</groupId>-->
-            <!--                <artifactId>maven-checkstyle-plugin</artifactId>-->
-            <!--                <version>${checkstyle.version}</version>-->
-            <!--&lt;!&ndash;                <configuration>&ndash;&gt;-->
-            <!--&lt;!&ndash;                    <includeTestSourceDirectory>true</includeTestSourceDirectory>&ndash;&gt;-->
-            <!--&lt;!&ndash;                    <configLocation>${project.build.sourceDirectory}/../resources/checkstyle.xml</configLocation>&ndash;&gt;-->
-            <!--&lt;!&ndash;                </configuration>&ndash;&gt;-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <id>analyze-compile</id>-->
-            <!--                        <phase>compile</phase>-->
-            <!--                        <goals>-->
-            <!--                            <goal>check</goal>-->
-            <!--                        </goals>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--            </plugin>-->
         </plugins>
     </build>
 

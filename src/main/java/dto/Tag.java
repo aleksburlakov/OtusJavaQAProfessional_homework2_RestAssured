@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Tag {
 
-    private long id;
-    private String name;
+  private long id;
+  private String name;
 }
